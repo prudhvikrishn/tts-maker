@@ -12,24 +12,55 @@ jobs:
         with:
           java-version: '11'
 
-      - name: Install Android SDK
+      - name: Install Android SDK and NDK
         run: |
           # Install Android SDK command-line tools
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-6200805_latest.zip -O /tmp/cmdline-tools.zip
-          unzip -q /tmp/cmdline-tools.zip -d /tmp
-          mkdir -p $HOME/.android-sdk/cmdline-tools
-          mv /tmp/cmdline-tools $HOME/.android-sdk/cmdline-tools/latest
+          wget https://dl.google.com/android/repository/commandlinetools-linux-6200805_latest.zip -O /tmp/cmdline-tools.zip
+          # Verify download
+          if [ ! -f /tmp/cmdline-tools.zip ]; then
+            echo "Error: Failed to download command-line tools ZIP"
+            exit 1
+          fi
+          unzip /tmp/cmdline-tools.zip -d /tmp
+          # Debug: List extracted contents
+          echo "Listing /tmp contents after unzip:"
+          ls -la /tmp
+          # Check for expected directory (ZIP may extract to 'tools' or 'cmdline-tools')
+          if [ -d /tmp/tools ]; then
+            mkdir -p $HOME/.android-sdk/cmdline-tools
+            mv /tmp/tools $HOME/.android-sdk/cmdline-tools/latest
+          elif [ -d /tmp/cmdline-tools ]; then
+            mkdir -p $HOME/.android-sdk/cmdline-tools
+            mv /tmp/cmdline-tools $HOME/.android-sdk/cmdline-tools/latest
+          else
+            echo "Error: Neither /tmp/tools nor /tmp/cmdline-tools found"
+            exit 1
+          fi
+
+          # Install Android NDK (r23b)
+          wget https://dl.google.com/android/repository/android-ndk-r23b-linux.zip -O /tmp/android-ndk.zip
+          if [ ! -f /tmp/android-ndk.zip ]; then
+            echo "Error: Failed to download NDK ZIP"
+            exit 1
+          fi
+          unzip /tmp/android-ndk.zip -d $HOME/.android-sdk
+          mv $HOME/.android-sdk/android-ndk-r23b $HOME/.android-sdk/ndk/23b
 
           # Set environment variables
           echo "ANDROID_HOME=$HOME/.android-sdk" >> $GITHUB_ENV
+          echo "ANDROID_NDK_HOME=$HOME/.android-sdk/ndk/23b" >> $GITHUB_ENV
           echo "$HOME/.android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
 
-      - name: Accept SDK Licenses
+      - name: Accept SDK Licenses and Install Build-Tools
         run: |
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;36.0.0"
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;33.0.2" "platforms;android-33"
+
+      - name: Install Buildozer
+        run: |
+          pip install buildozer==1.4.0
+          pip install -r requirements.txt
 
       - name: Build with Buildozer
         run: |
-          # Your Buildozer or build command here
           buildozer android debug
