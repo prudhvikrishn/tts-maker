@@ -19,12 +19,16 @@ jobs:
         pip install --upgrade pip
         pip install --user buildozer cython
 
-    - name: Preinstall Android Build Tools 33.0.2
+    - name: Build APK with Buildozer (allow license fail first)
       run: |
-        yes | $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager \
-          "build-tools;33.0.2" "platform-tools" "platforms;android-33"
+        export PATH=$PATH:$HOME/.local/bin
+        buildozer android debug || true
 
-    - name: Build APK
+    - name: Accept SDK Licenses Manually
+      run: |
+        yes | $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
+
+    - name: Rebuild APK After License Accepted
       run: |
         export PATH=$PATH:$HOME/.local/bin
         buildozer android debug
