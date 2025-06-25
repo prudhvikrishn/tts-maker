@@ -19,6 +19,11 @@ jobs:
         pip install --upgrade pip
         pip install --user buildozer cython
 
+    - name: Preinstall Android Build Tools 33.0.2
+      run: |
+        yes | $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager \
+          "build-tools;33.0.2" "platform-tools" "platforms;android-33"
+
     - name: Build APK
       run: |
         export PATH=$PATH:$HOME/.local/bin
