@@ -13,7 +13,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt install -y build-essential ccache git libncurses5 libffi-dev libssl-dev \
+        sudo apt install -y build-essential ccache git libffi-dev libssl-dev \
           zlib1g-dev libsqlite3-dev libjpeg-dev libfreetype6-dev libbz2-dev \
           openjdk-17-jdk python3-pip unzip zip
         pip install --upgrade pip
