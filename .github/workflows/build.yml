@@ -1,0 +1,31 @@
+name: Build APK
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y build-essential ccache git libncurses5 libffi-dev libssl-dev \
+          zlib1g-dev libsqlite3-dev libjpeg-dev libfreetype6-dev libbz2-dev \
+          openjdk-17-jdk python3-pip unzip zip
+        pip install --upgrade pip
+        pip install --user buildozer cython
+
+    - name: Build APK
+      run: |
+        export PATH=$PATH:$HOME/.local/bin
+        buildozer android debug
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: ttsmaker-apk
+        path: bin/*.apk
