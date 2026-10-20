@@ -6,6 +6,10 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
 version = 1.0
 requirements = python3,kivy,pyjnius
+
+# Stable python-for-android release; its kivy (2.3.0) and pyjnius (1.6.1) recipes
+# build with Cython 0.29, which the workflow installs. The master branch moves too fast.
+p4a.branch = v2024.01.21
 orientation = portrait
 icon = None
 fullscreen = 0
