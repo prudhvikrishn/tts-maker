@@ -20,7 +20,7 @@ pip install buildozer==1.4.0
 buildozer android debug     # the APK is written to bin/
 ```
 
-`.github/workflows/build.yml` runs the same build on GitHub Actions for every push to `main`, and the APK can be downloaded from the run's **Artifacts** section.
+`.github/workflows/build.yml` runs this build on GitHub Actions. It currently stops while compiling a dependency for Android, so build the APK locally until that is fixed.
 
 ## Run on a desktop (interface only)
 
