@@ -79,10 +79,8 @@ class TTSScreen(BoxLayout):
             try:
                 self.tts.setLanguage(lang)
                 self.tts.setSpeechRate(speed)
+                # speak() runs in the background, so the screen stays responsive.
                 self.tts.speak(text, TextToSpeech.QUEUE_FLUSH, None)
-                # Wait for TTS to finish speaking
-                while self.tts.isSpeaking():
-                    continue
             except Exception as e:
                 self.show_error(f"Error: {str(e)}")
         else:
